@@ -29,7 +29,6 @@ import InvoiceList from './hoang/DAW_BOOKSTORE_FE/src/pages/admin/invoices/Invoi
 import MainLayout from './hoang/DAW_BOOKSTORE_FE/src/layouts/MainLayout.jsx';
 import AdminLayout from './hoang/DAW_BOOKSTORE_FE/src/layouts/AdminLayout.jsx';
 import Cart from "./hoang/DAW_BOOKSTORE_FE/src/components/cart/Cart.jsx";
-import Cart from "./hoang/DAW_BOOKSTORE_FE/src/components/cart/Cart";
 
 const ProtectedRoute = ({ children }) => {
   const hasSession = Boolean(localStorage.getItem('access_token') || localStorage.getItem('user'));
