@@ -1,0 +1,70 @@
+{
+  "entities": {
+    "category": {
+      "title": "Category",
+      "description": "Book category",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "book": {
+      "title": "Book",
+      "description": "Book item",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "price": { "type": "number" },
+        "stock": { "type": "number" },
+        "category_id": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "isFeatured": { "type": "boolean" }
+      },
+      "required": ["title", "author", "price", "category_id"]
+    },
+    "user": {
+      "title": "User",
+      "description": "User profile",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "invoice": {
+      "title": "Invoice",
+      "description": "Purchase invoice",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "total": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/categories": {
+      "schema": "category",
+      "description": "Book categories"
+    },
+    "/books": {
+      "schema": "book",
+      "description": "Books in the store"
+    },
+    "/users": {
+      "schema": "user",
+      "description": "Users of the platform"
+    },
+    "/invoices": {
+      "schema": "invoice",
+      "description": "Sales invoices"
+    }
+  }
+}

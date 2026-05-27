@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/artifacts/(.*)",
+      "destination": "/artifacts/$1"
+    },
+    {
+      "source": "/((?!api/|artifacts/|.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

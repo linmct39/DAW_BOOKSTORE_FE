@@ -1,0 +1,6 @@
+{
+  "name": "DAW BookStore",
+  "description": "A simple bookstore website with REST API, CRUD, and Google Social Login. Built with React, Express, and Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
