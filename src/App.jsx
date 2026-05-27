@@ -16,7 +16,6 @@ import ProfilePage from './linh/DAW_BOOKSTORE_FE-dev/src/pages/ProfilePage.jsx';
 import Home from './pages/Kiet/Home';
 import Search from './pages/Kiet/Search';
 import BookDetail from './pages/Kiet/BookDetail';
-import Cart from "./hoang/DAW_BOOKSTORE_FE/src/components/cart/Cart";
 import Checkout from './hoang/DAW_BOOKSTORE_FE/src/pages/Checkout.jsx';
 import Invoice from './hoang/DAW_BOOKSTORE_FE/src/pages/Invoice.jsx';
 import AdminDashboard from './hoang/DAW_BOOKSTORE_FE/src/pages/admin/AdminDashboard.jsx';
