@@ -28,6 +28,7 @@ import UserForm from './hoang/DAW_BOOKSTORE_FE/src/pages/admin/users/UserForm.js
 import InvoiceList from './hoang/DAW_BOOKSTORE_FE/src/pages/admin/invoices/InvoiceList.jsx';
 import MainLayout from './hoang/DAW_BOOKSTORE_FE/src/layouts/MainLayout.jsx';
 import AdminLayout from './hoang/DAW_BOOKSTORE_FE/src/layouts/AdminLayout.jsx';
+import Cart from "./hoang/DAW_BOOKSTORE_FE/src/components/cart/Cart.jsx";
 import Cart from "./hoang/DAW_BOOKSTORE_FE/src/components/cart/Cart";
 
 const ProtectedRoute = ({ children }) => {
