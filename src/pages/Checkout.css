@@ -1,0 +1,79 @@
+.checkout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 25px;
+  padding: 40px;
+  background: #f6f7fb;
+  min-height: 100vh;
+  font-family: system-ui;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#3b82f6,#2563eb);
+  color: white;
+  font-weight: bold;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.row.total {
+  font-weight: bold;
+  font-size: 18px;
+}
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  border: 1px solid #e5e7eb;
+  background: white;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #f3f4f6;
+  transform: translateX(-2px);
+}
+
+.btn-back:active {
+  transform: scale(0.98);
+}
