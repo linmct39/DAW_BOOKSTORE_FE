@@ -13,7 +13,6 @@ import CategoryForm from "./pages/admin/categories/CategoryForm";
 import UserList from "./pages/admin/users/UserList";
 import UserForm from "./pages/admin/users/UserForm";
 import InvoiceList from "./pages/admin/invoices/InvoiceList";
-import Cart from "./hoang/DAW_BOOKSTORE_FE/src/components/cart/Cart";
 import Checkout from "./pages/Checkout";
 import Invoice from "./pages/Invoice";
 
