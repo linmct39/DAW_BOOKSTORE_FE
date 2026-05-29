@@ -1,0 +1,6 @@
+{
+  "name": "DAW BOOKSTORE",
+  "description": "Hệ thống cửa hàng sách trực tuyến DAW BOOKSTORE chuyên nghiệp với đầy đủ tính năng CRUD sách, quản lý danh mục, tài khoản thành viên, đơn hàng COD giao nhanh và trang quản trị Admin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
