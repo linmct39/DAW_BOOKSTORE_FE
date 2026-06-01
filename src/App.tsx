@@ -4,6 +4,10 @@ import { CartProvider } from "./context/CartContext";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import BookManager from "./admin/BookManager";
+import CategoryManager from "./admin/CategoryManager";
+import UserManager from "./admin/UserManager";
+import InvoiceManager from "./admin/InvoiceManager";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -54,14 +58,41 @@ export default function App() {
               />
 
               {/* Admin Protected Routes */}
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminDashboard />
-                  </AdminRoute>
-                }
-              />
+<Route
+  path="/admin"
+  element={
+    <AdminRoute>
+      <AdminDashboard />
+    </AdminRoute>
+  }
+>
+
+  <Route
+    index
+    element={<Navigate to="books" replace />}
+  />
+
+  <Route
+    path="books"
+    element={<BookManager />}
+  />
+
+  <Route
+    path="categories"
+    element={<CategoryManager />}
+  />
+
+  <Route
+    path="users"
+    element={<UserManager />}
+  />
+
+  <Route
+    path="invoices"
+    element={<InvoiceManager />}
+  />
+
+</Route>
 
               {/* Catch-all fallback redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
