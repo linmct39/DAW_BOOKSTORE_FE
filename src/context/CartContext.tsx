@@ -45,6 +45,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     book: { id: string; title: string; author: string; price: number; imageUrl: string; stock: number },
     quantity = 1
   ) => {
+    // Validate book ID is numeric or can be converted to numeric
+    const bookId = String(book.id);
+    const numericId = Number(bookId);
+    if (isNaN(numericId) || numericId <= 0) {
+      alert(`Lỗi: Sách "${book.title}" có ID không hợp lệ (${bookId}). Vui lòng làm mới trang và thử lại.`);
+      return;
+    }
+
     const existing = cartItems.find((item) => item.bookId === book.id);
     if (existing) {
       const newQty = existing.quantity + quantity;

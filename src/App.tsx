@@ -7,7 +7,7 @@ import AdminRoute from "./components/AdminRoute";
 import BookManager from "./admin/BookManager";
 import CategoryManager from "./admin/CategoryManager";
 import UserManager from "./admin/UserManager";
-import InvoiceManager from "./admin/InvoiceManager";
+
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -87,12 +87,7 @@ export default function App() {
     element={<UserManager />}
   />
 
-  <Route
-    path="invoices"
-    element={<InvoiceManager />}
-  />
-
-</Route>
+  </Route>
 
               {/* Catch-all fallback redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />

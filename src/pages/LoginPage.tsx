@@ -16,11 +16,8 @@ export default function LoginPage() {
   // Redirect to the page they were trying to access, or homepage
   const from = (location.state as any)?.from?.pathname || "/";
 
-  // Google OAuth Credentials Config State
-  const [googleClientId, setGoogleClientId] = useState(() => {
-    return localStorage.getItem("google_client_id") || "1042797769997-p6icpsuonr6v2sc9bgnm30bof8h62clv.apps.googleusercontent.com";
-  });
-  const [showConfig, setShowConfig] = useState(false);
+  // Google OAuth Credentials (from localStorage)
+  const googleClientId = localStorage.getItem("google_client_id") || "228946788829-edbuibdbnumitb9lqeglamdpa3t2insa.apps.googleusercontent.com";
 
   // Use postMessage listener to capture Google Callback credentials
   React.useEffect(() => {
@@ -60,19 +57,13 @@ export default function LoginPage() {
   const handleGoogleLogin = () => {
     setError(null);
     try {
-      if (!googleClientId || !googleClientId.trim()) {
-        setError("Vui lòng điền Google Client ID trong mục Cấu hình phía dưới!");
-        return;
-      }
-
-      localStorage.setItem("google_client_id", googleClientId.trim());
 
       const redirectUri = `${window.location.origin}/auth/google/callback`;
       const scope = "openid email profile";
       const nonce = Math.random().toString(36).substring(2);
 
       const params = new URLSearchParams({
-        client_id: googleClientId.trim(),
+        client_id: googleClientId,
         redirect_uri: redirectUri,
         response_type: "id_token",
         scope: scope,
@@ -214,54 +205,7 @@ export default function LoginPage() {
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" className="w-5 h-5 shrink-0" />
             <span>Đăng nhập qua tài khoản Google</span>
           </button>
-
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => setShowConfig(!showConfig)}
-              className="text-[10px] text-gray-400 hover:text-indigo-600 font-semibold underline transition duration-150 cursor-pointer focus:outline-hidden"
-            >
-              {showConfig ? "Ẩn hướng dẫn liên kết API" : "⚙️ Xem thông tin tích hợp Google OAuth 2.0"}
-            </button>
-          </div>
         </div>
-
-        {showConfig && (
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3 text-xs text-gray-600 animate-slide-down">
-            <h4 className="font-bold text-gray-800 text-xs">Cấu hình Google Credentials</h4>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Google Client ID:</label>
-              <input
-                type="text"
-                placeholder="Google Client ID (.apps.googleusercontent.com)"
-                value={googleClientId}
-                onChange={(e) => {
-                  setGoogleClientId(e.target.value);
-                  localStorage.setItem("google_client_id", e.target.value.trim());
-                }}
-                className="w-full bg-white border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg p-2 text-xs font-mono"
-              />
-            </div>
-            
-            <div className="space-y-1 pt-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">Authorized JavaScript Origins:</span>
-              <div className="bg-gray-100 p-2 rounded-lg font-mono text-[9px] select-all break-all border border-gray-200">
-                {window.location.origin}
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">Authorized Redirect URIs:</span>
-              <div className="bg-gray-100 p-2 rounded-lg font-mono text-[9px] select-all break-all border border-gray-200">
-                {window.location.origin}/auth/google/callback
-              </div>
-            </div>
-
-            <p className="text-[10px] text-gray-400 leading-tight">
-              Để thử nghiệm đăng nhập Google thật, quý khách vui lòng thêm các URL nguồn chính xác trên vào Google Cloud Console.
-            </p>
-          </div>
-        )}
 
         <div className="border-t border-gray-100 pt-4 text-center">
           <p className="text-xs text-gray-500">

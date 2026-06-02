@@ -29,61 +29,8 @@ export default function CartPage() {
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMsg(null);
-
-    if (!user) {
-      navigate("/login", { state: { from: { pathname: "/cart" } } });
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      setStatusMsg({ type: "error", text: "Giỏ hàng của bạn đang trống rỗng!" });
-      return;
-    }
-
-    if (!fullName.trim() || !phone.trim() || !shippingAddress.trim()) {
-      setStatusMsg({ type: "error", text: "Vui lòng nhập đầy đủ thông tin giao nhận hàng!" });
-      return;
-    }
-
-    try {
-      setCheckingOut(true);
-      const invoicePayload = {
-        userId: user.id,
-        totalAmount: cartTotal,
-        note: `Người nhận: ${fullName}. SĐT: ${phone}. Đ/C: ${shippingAddress}`,
-        fullName,
-        phone,
-        shippingAddress,
-        items: cartItems.map((item) => ({
-          bookId: item.bookId,
-          quantity: item.quantity,
-          unitPrice: item.price
-        })),
-      };
-
-      const invoiceResult = await invoiceApi.createInvoice(invoicePayload);
-      const invoiceId = invoiceResult.invoice_id || invoiceResult.id || Math.floor(Math.random() * 1000);
-      clearCart(); // clear client cart state on success
-      setStatusMsg({
-        type: "success",
-        text: `Đặt hàng thành công! Mã hóa đơn của bạn: #${invoiceId}`,
-      });
-      
-      // Delay navigation so they see the success banner
-      setTimeout(() => {
-        navigate("/invoices");
-      }, 2000);
-    } catch (err: any) {
-      console.error("Lỗi đặt hàng:", err);
-      const errMsg = err?.response?.data?.message || err?.response?.data?.detail || err?.response?.data?.error || err?.message || "Quá trình thanh toán gặp trục trặc kỹ thuật, vui lòng liên hệ admin!";
-      setStatusMsg({
-        type: "error",
-        text: errMsg,
-      });
-    } finally {
-      setCheckingOut(false);
-    }
+    setStatusMsg({ type: "error", text: "Tính năng đặt hàng COD đang được phát triển. Vui lòng quay lại sau." });
+    return;
   };
 
   if (cartItems.length === 0) {

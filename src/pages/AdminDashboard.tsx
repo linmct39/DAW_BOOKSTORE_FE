@@ -63,11 +63,6 @@ export default function AdminDashboard() {
       icon: Users,
       path: "/admin/users",
     },
-    {
-      title: "Hóa đơn",
-      icon: FileText,
-      path: "/admin/invoices",
-    },
   ];
 
   return (

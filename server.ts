@@ -55,7 +55,63 @@ interface Invoice {
 // In-memory data store with Vietnamese book seeds
 let categories: Category[] = [];
 
-let books: Book[] = [];
+let books: Book[] = [
+  {
+    id: "1",
+    title: "Clean Code",
+    author: "Robert C. Martin",
+    price: 50000,
+    description: "Programming best practices",
+    imageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400",
+    categoryId: "1",
+    featured: true,
+    stock: 10,
+  },
+  {
+    id: "2",
+    title: "Design Patterns",
+    author: "Gang of Four",
+    price: 75000,
+    description: "Reusable solutions to common problems",
+    imageUrl: "https://images.unsplash.com/photo-1507842217343-583f20270319?auto=format&fit=crop&q=80&w=400",
+    categoryId: "1",
+    featured: true,
+    stock: 8,
+  },
+  {
+    id: "3",
+    title: "The Pragmatic Programmer",
+    author: "David Thomas",
+    price: 60000,
+    description: "Your journey to mastery",
+    imageUrl: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&q=80&w=400",
+    categoryId: "1",
+    featured: true,
+    stock: 12,
+  },
+  {
+    id: "4",
+    title: "Refactoring",
+    author: "Martin Fowler",
+    price: 55000,
+    description: "Improving the design of existing code",
+    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=400",
+    categoryId: "1",
+    featured: false,
+    stock: 6,
+  },
+  {
+    id: "5",
+    title: "The Mythical Man-Month",
+    author: "Fred Brooks",
+    price: 45000,
+    description: "Essays on software engineering",
+    imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400",
+    categoryId: "1",
+    featured: false,
+    stock: 5,
+  },
+];
 
 let users: User[] = [];
 
@@ -460,9 +516,8 @@ async function startServer() {
     res.json(userInvoices);
   });
 
-  app.get("/api/admin/invoices", requireAdmin, (req, res) => {
-    res.json(invoices);
-  });
+  // Removed admin-only invoices listing endpoint to avoid exposing invoice list via /api/admin/invoices
+  // If admin access to all invoices is required later, re-add a protected endpoint with proper auth.
 
   app.get("/api/invoices/:id", requireAuth, (req: any, res) => {
     const inv = invoices.find(i => i.id === req.params.id);
@@ -479,49 +534,62 @@ async function startServer() {
     const rawItems = req.body.items;
     const userId = req.user ? req.user.id : (req.body.user_id || 30);
     const userEmail = req.user ? req.user.email : `user_${userId}@example.com`;
-    const fullName = req.body.fullName || "Khách Hàng API";
-    const phone = req.body.phone || "0987654321";
-    const shippingAddress = req.body.shippingAddress || req.body.note || "Giao giờ hành chính";
+    const fullName = req.body.fullName || req.body.receiver_name || req.body.receiverName || "Khách Hàng API";
+    const phone = req.body.phone || req.body.phone_number || req.body.phoneNumber || "0987654321";
+    const shippingAddress = req.body.shippingAddress || req.body.shipping_address || req.body.address || req.body.note || "Giao giờ hành chính";
     const user_id = req.body.user_id || Number(userId);
     const total_amount = req.body.total_amount || req.body.totalAmount;
-    const note = req.body.note || shippingAddress;
+    const note = req.body.note || "";
 
-    if (!rawItems || !Array.isArray(rawItems) || rawItems.length === 0) {
-      return res.status(400).json({ message: "Các trường user_id, total_amount, items không được trống hoặc giỏ hàng rỗng" });
+    // Validate basic required fields
+    if (!rawItems || !Array.isArray(rawItems)) {
+      return res.status(400).json({ message: "Danh sách sản phẩm (items) không hợp lệ" });
+    }
+    if (rawItems.length === 0) {
+      return res.status(400).json({ message: "Giỏ hàng rỗng, không thể tạo hóa đơn." });
     }
 
-    // Process books purchase verification
+    // Basic phone format validation
+    if (phone && !/^[0-9+]{7,15}$/.test(String(phone))) {
+      return res.status(400).json({ message: "số điện thoại không đúng cấu trúc" });
+    }
+
+    // Process items without validating against local books
+    // (Frontend books come from remote API, so just accept the items as-is)
     let totalAmount = 0;
     const invoiceItems: InvoiceItem[] = [];
 
-    for (const item of rawItems) {
+    for (let idx = 0; idx < rawItems.length; idx++) {
+      const item = rawItems[idx];
       const bId = item.bookId !== undefined ? item.bookId : item.book_id;
       if (bId === undefined) {
         return res.status(400).json({
           success: false,
-          message: "Sản phẩm không đúng cấu trúc (thiếu ID, số lượng hoặc đơn giá)."
+          message: `Sản phẩm tại vị trí ${idx + 1} không đúng cấu trúc (thiếu ID, số lượng hoặc đơn giá).`
         });
       }
 
-      const book = books.find(b => String(b.id) === String(bId));
-      if (!book) {
-        return res.status(400).json({ message: `Sách với mã ID ${bId} không tồn tại` });
+      const q = Number(item.quantity) || Number(item.qty) || 1;
+      if (q <= 0) {
+        return res.status(400).json({
+          message: `Sản phẩm tại vị trí ${idx + 1} phải có số lượng > 0.`
+        });
       }
 
-      const q = Number(item.quantity) || 1;
-      if (book.stock < q) {
-        return res.status(400).json({ message: `Sách "${book.title}" chỉ còn ${book.stock} cuốn trong kho.` });
+      // Accept unit_price from frontend (client has the correct price from remote API)
+      const price = Number(item.price !== undefined ? item.price : item.unit_price !== undefined ? item.unit_price : item.unitPrice);
+      if (isNaN(price) || price <= 0) {
+        return res.status(400).json({
+          message: `Sản phẩm tại vị trí ${idx + 1} phải có giá > 0.`
+        });
       }
-      // Deduct stock
-      book.stock -= q;
 
-      const price = Number(item.price !== undefined ? item.price : item.unit_price) || book.price;
       const subtotal = price * q;
       totalAmount += subtotal;
 
       invoiceItems.push({
-        bookId: book.id,
-        title: book.title,
+        bookId: String(bId),
+        title: item.title || `Sách #${bId}`,
         price: price,
         quantity: q
       });
@@ -557,7 +625,8 @@ async function startServer() {
   };
 
   app.post("/api/invoices", requireAuth, handleCreateInvoice);
-  app.post("/api/invoices/add", requireAuth, handleCreateInvoice);
+  // Allow creating invoices (e.g., COD checkout) without requiring login
+  app.post("/api/invoices/add", handleCreateInvoice);
 
   app.put("/api/invoices/:id", requireAdmin, (req, res) => {
     const { status } = req.body;

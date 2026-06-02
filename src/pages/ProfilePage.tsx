@@ -12,6 +12,7 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -38,15 +39,16 @@ export default function ProfilePage() {
     try {
       setSubmitting(true);
       
-      // Update profile info using Row 5 endpoint
-      const updateData = {
-        username: user.email.split("@")[0],
-        email: user.email,
-        fullName: fullName,
-        phone: phone,
-        address: address
-      };
-      await authApi.updateProfile(user.id, updateData);
+      // Build FormData according to API spec: username, email, full_name, phone, address, avatar (file)
+      const fd = new FormData();
+      fd.append("username", user.email.split("@")[0]);
+      fd.append("email", user.email);
+      fd.append("full_name", fullName);
+      fd.append("phone", phone);
+      fd.append("address", address);
+      if (avatarFile) fd.append("avatar", avatarFile);
+
+      await authApi.updateProfile(user.id, fd);
 
       // If they also want to change password (Row 7 endpoint)
       if (password) {
@@ -159,6 +161,16 @@ export default function ProfilePage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 focus:bg-white focus:border-indigo-500 rounded-lg px-3 py-2 text-xs font-medium text-gray-900 focus:outline-hidden"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-700">Ảnh đại diện (jpg, jpeg, png)</label>
+              <input
+                type="file"
+                accept="image/png, image/jpeg, image/jpg"
+                onChange={(e) => setAvatarFile(e.target.files ? e.target.files[0] : null)}
+                className="w-full text-xs"
               />
             </div>
 

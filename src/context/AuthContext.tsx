@@ -101,13 +101,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatar: data.avatar || undefined,
       };
 
+      // Store token first so axios interceptor can attach Authorization header
+      localStorage.setItem("bookstore_token", resolvedToken);
+      setToken(resolvedToken);
+
       try {
         const profileResponse = await authApi.getProfile(resolvedUserId);
         const profileUser = profileResponse.user || profileResponse;
         if (profileUser) {
           profileUserObj = {
             id: resolvedUserId,
-            email: profileUser.email || email,
+            email: email,
             fullName: profileUser.full_name || profileUser.fullName || profileUserObj.fullName,
             role: profileUser.role === "admin" ? "admin" : resolvedRole,
             phone: profileUser.phone || undefined,
@@ -119,10 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn("Could not retrieve real-time user profile, using fallback details:", profileErr);
       }
 
-      localStorage.setItem("bookstore_token", resolvedToken);
       localStorage.setItem("bookstore_user", JSON.stringify(profileUserObj));
-      
-      setToken(resolvedToken);
       setUser(profileUserObj);
       return profileUserObj;
     } catch (error: any) {
@@ -137,12 +138,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const response = await authApi.loginWithGoogle(idToken);
-      // Wait, let's look at the response structure from Row 6:
-      // Response: { success or message, data: { id: 23, username, avatar } }
-      const responseDataObj = response.data || response;
+      // Normalize response shapes: server may return { message, data: {...} } or directly {...}
+      const top = response || {};
+      const body = top.data || top.user || top;
+      const responseDataObj = body || {};
       const email = responseDataObj.email || `${responseDataObj.username || "google_user"}@gmail.com`;
-      const resolvedUserId = responseDataObj.id?.toString() || getUserIdFromRegistry(email);
-      const resolvedToken = response.token || response.accessToken || btoa(JSON.stringify({ email, id: resolvedUserId, isGoogle: true, time: Date.now() }));
+      const resolvedUserId = (responseDataObj.id?.toString()) || getUserIdFromRegistry(email);
+      const resolvedToken = top.token || top.accessToken || btoa(JSON.stringify({ email, id: resolvedUserId, isGoogle: true, time: Date.now() }));
       
       let resolvedRole: "admin" | "customer" = "customer";
       if (email.toLowerCase().includes("admin") || responseDataObj.role === "admin") {
@@ -159,6 +161,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatar: responseDataObj.avatar || undefined,
       };
 
+      // Store token first so axios interceptor can attach Authorization header
+      localStorage.setItem("bookstore_token", resolvedToken);
+      setToken(resolvedToken);
+
       // Try fetching real-time profile to sync
       try {
         const profileResponse = await authApi.getProfile(resolvedUserId);
@@ -166,7 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (profileUser) {
           profileUserObj = {
             id: resolvedUserId,
-            email: profileUser.email || email,
+            email: email,
             fullName: profileUser.full_name || profileUser.fullName || profileUserObj.fullName,
             role: profileUser.role === "admin" ? "admin" : resolvedRole,
             phone: profileUser.phone || undefined,
@@ -178,10 +184,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn("Could not retrieve real-time profile during Google Sign-In, using defaults:", profileErr);
       }
 
-      localStorage.setItem("bookstore_token", resolvedToken);
       localStorage.setItem("bookstore_user", JSON.stringify(profileUserObj));
 
-      setToken(resolvedToken);
       setUser(profileUserObj);
       return profileUserObj;
     } catch (error: any) {
@@ -226,7 +230,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profileUser) {
         const updatedUser: UserProfile = {
           ...user,
-          email: profileUser.email || user.email,
+          email: user.email,
           fullName: profileUser.full_name || profileUser.fullName || user.fullName,
           phone: profileUser.phone || user.phone,
           address: profileUser.address || user.address,
